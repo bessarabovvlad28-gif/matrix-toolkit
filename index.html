@@ -29,15 +29,22 @@
 2
 3</textarea></label>
         </div>
-        <h3>Операции</h3>
+        <h3>Операции с матрицами</h3>
         <div class="buttons">
-          <button data-op="add">A + B</button><button data-op="subtract">A − B</button><button data-op="multiply">A × B</button>
-          <button data-op="transposeA">Aᵀ</button><button data-op="transposeB">Bᵀ</button>
-          <button data-op="detA">det(A)</button><button data-op="detB">det(B)</button>
-          <button data-op="inverseA">A⁻¹</button><button data-op="inverseB">B⁻¹</button>
-          <button data-op="rankA">rank(A)</button><button data-op="traceA">trace(A)</button><button data-op="rrefA">RREF(A)</button>
-          <button data-op="cramer">Крамер: решить Ax = b</button>
-          <button data-op="gauss">Гаусс: решить Ax = b</button>
+          <button data-op="add">Сложить матрицы</button>
+          <button data-op="subtract">Вычесть матрицы</button>
+          <button data-op="multiply">Умножить матрицы</button>
+          <button data-op="transposeA">Транспонировать матрицу A</button>
+          <button data-op="transposeB">Транспонировать матрицу B</button>
+          <button data-op="detA">Найти определитель матрицы A</button>
+          <button data-op="detB">Найти определитель матрицы B</button>
+          <button data-op="inverseA">Найти обратную матрицу A</button>
+          <button data-op="inverseB">Найти обратную матрицу B</button>
+          <button data-op="rankA">Найти ранг матрицы A</button>
+          <button data-op="traceA">Найти след матрицы A</button>
+          <button data-op="rrefA">Привести A к ступенчатому виду</button>
+          <button data-op="cramer">Решить систему методом Крамера</button>
+          <button data-op="gauss">Решить систему методом Гаусса</button>
         </div>
         <p class="hint">Для методов Крамера и Гаусса матрица A должна быть квадратной. Введите правую часть b в поле справа — одним числом на строку.</p>
       </section>
