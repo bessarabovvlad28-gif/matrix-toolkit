@@ -1,2 +1,13 @@
-# matrix-toolkit
-A browser-based toolkit for matrix operations, calculations, and visualizations.
+# Matrix Studio
+
+Статический сайт-калькулятор для матриц: сложение, вычитание, умножение, транспонирование, определитель, обратная матрица, ранг, след, RREF и решение систем `Ax = b`.
+
+## Посмотреть сайт на компьютере
+
+1. Откройте репозиторий и выберите **Code → Download ZIP**: https://github.com/bessarabovvlad28-gif/matrix-toolkit
+2. Распакуйте скачанный ZIP.
+3. Откройте папку в VS Code и дважды нажмите на `index.html` — он откроется в браузере.
+
+Или установите в VS Code расширение **Live Server**, нажмите правой кнопкой на `index.html` и выберите **Open with Live Server**.
+
+Все вычисления выполняются локально в браузере; библиотеки и сборка не нужны.

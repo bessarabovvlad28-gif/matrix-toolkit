@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Инструмент для вычислений с матрицами.">
+  <title>Matrix Studio — калькулятор матриц</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div><p class="eyebrow">Линейная алгебра</p><h1>Matrix Studio</h1><p class="subtitle">Вводите числа через пробел, строки — с новой строки.</p></div>
+      <button id="sample" class="quiet">Загрузить пример</button>
+    </header>
+    <section class="workspace">
+      <section class="card editor">
+        <h2>Матрицы</h2>
+        <div class="matrices">
+          <label>Матрица A<textarea id="matrixA" spellcheck="false">1 2 3
+4 5 6
+7 8 9</textarea></label>
+          <label>Матрица B<textarea id="matrixB" spellcheck="false">1 0 0
+0 1 0
+0 0 1</textarea></label>
+        </div>
+        <h3>Операции</h3>
+        <div class="buttons">
+          <button data-op="add">A + B</button><button data-op="subtract">A − B</button><button data-op="multiply">A × B</button>
+          <button data-op="transposeA">Aᵀ</button><button data-op="transposeB">Bᵀ</button>
+          <button data-op="detA">det(A)</button><button data-op="detB">det(B)</button>
+          <button data-op="inverseA">A⁻¹</button><button data-op="inverseB">B⁻¹</button>
+          <button data-op="rankA">rank(A)</button><button data-op="traceA">trace(A)</button><button data-op="rrefA">RREF(A)</button>
+          <button data-op="solve">Решить Ax = b</button>
+        </div>
+        <p class="hint">Для Ax = b введите коэффициенты в A, а значения b — одним столбцом в матрице B.</p>
+      </section>
+      <aside class="card result-card"><h2>Результат</h2><pre id="result" aria-live="polite">Выберите операцию.</pre></aside>
+    </section>
+    <footer>Все вычисления выполняются в вашем браузере.</footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
