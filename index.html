@@ -3,26 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Инструмент для вычислений с матрицами.">
+  <meta name="description" content="Инструмент для вычислений с матрицами и решения систем линейных уравнений.">
   <title>Matrix Studio — калькулятор матриц</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app">
     <header class="topbar">
-      <div><p class="eyebrow">Линейная алгебра</p><h1>Matrix Studio</h1><p class="subtitle">Вводите числа через пробел, строки — с новой строки.</p></div>
+      <div>
+        <p class="eyebrow">Линейная алгебра</p>
+        <h1>Matrix Studio</h1>
+        <p class="subtitle">Числа разделяйте пробелами, строки — переносами.</p>
+      </div>
       <button id="sample" class="quiet">Загрузить пример</button>
     </header>
+
     <section class="workspace">
       <section class="card editor">
         <h2>Матрицы</h2>
         <div class="matrices">
-          <label>Матрица A<textarea id="matrixA" spellcheck="false">1 2 3
-4 5 6
-7 8 9</textarea></label>
-          <label>Матрица B<textarea id="matrixB" spellcheck="false">1 0 0
-0 1 0
-0 0 1</textarea></label>
+          <label>Матрица A<textarea id="matrixA" spellcheck="false">2 1 0
+1 3 1
+0 1 2</textarea></label>
+          <label>Вектор b<textarea id="matrixB" spellcheck="false">1
+2
+3</textarea></label>
         </div>
         <h3>Операции</h3>
         <div class="buttons">
@@ -31,11 +36,18 @@
           <button data-op="detA">det(A)</button><button data-op="detB">det(B)</button>
           <button data-op="inverseA">A⁻¹</button><button data-op="inverseB">B⁻¹</button>
           <button data-op="rankA">rank(A)</button><button data-op="traceA">trace(A)</button><button data-op="rrefA">RREF(A)</button>
-          <button data-op="solve">Решить Ax = b</button>
+          <button data-op="cramer">Крамер: решить Ax = b</button>
+          <button data-op="gauss">Гаусс: решить Ax = b</button>
         </div>
-        <p class="hint">Для Ax = b введите коэффициенты в A, а значения b — одним столбцом в матрице B.</p>
+        <p class="hint">Для методов Крамера и Гаусса матрица A должна быть квадратной. Введите правую часть b в поле справа — одним числом на строку.</p>
       </section>
-      <aside class="card result-card"><h2>Результат</h2><pre id="result" aria-live="polite">Выберите операцию.</pre></aside>
+
+      <aside class="card result-card">
+        <h2>Ответ</h2>
+        <pre id="result" aria-live="polite">Выберите операцию.</pre>
+        <h2 class="steps-heading">Ход решения</h2>
+        <pre id="steps" aria-live="polite">Для методов Крамера и Гаусса здесь появятся шаги решения.</pre>
+      </aside>
     </section>
     <footer>Все вычисления выполняются в вашем браузере.</footer>
   </main>
