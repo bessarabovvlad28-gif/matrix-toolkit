@@ -25,7 +25,7 @@
           <label>Матрица A<textarea id="matrixA" spellcheck="false">2 1 0
 1 3 1
 0 1 2</textarea></label>
-          <label>Вектор b<textarea id="matrixB" spellcheck="false">1
+          <label>Матрица B или вектор b<textarea id="matrixB" spellcheck="false">1
 2
 3</textarea></label>
         </div>
@@ -42,18 +42,18 @@
           <button data-op="inverseB">Обратная B</button>
           <button data-op="rankA">Ранг A</button>
           <button data-op="traceA">След A</button>
-          <button data-op="rrefA">Ступенчатый вид</button>
+          <button data-op="rrefA">Ступенчатый вид A</button>
           <button data-op="cramer">Крамер</button>
           <button data-op="gauss">Гаусс</button>
         </div>
-        <p class="hint">Для решений систем введите квадратную матрицу A и столбец b справа.</p>
+        <p class="hint">Для Крамера и Гаусса введите квадратную матрицу A и вектор b в поле справа — одним числом на строку. Для сложения, вычитания и умножения используйте в поле B матрицу нужного размера.</p>
       </section>
 
       <aside class="card result-card">
         <h2>Ответ</h2>
         <pre id="result" aria-live="polite">Выберите действие.</pre>
         <h2 class="steps-heading">Пошаговый ход</h2>
-        <pre id="steps" aria-live="polite">Здесь появится ход решения.</pre>
+        <pre id="steps" aria-live="polite">Подробные шаги появятся здесь.</pre>
       </aside>
     </section>
     <footer>Все вычисления выполняются в браузере.</footer>
