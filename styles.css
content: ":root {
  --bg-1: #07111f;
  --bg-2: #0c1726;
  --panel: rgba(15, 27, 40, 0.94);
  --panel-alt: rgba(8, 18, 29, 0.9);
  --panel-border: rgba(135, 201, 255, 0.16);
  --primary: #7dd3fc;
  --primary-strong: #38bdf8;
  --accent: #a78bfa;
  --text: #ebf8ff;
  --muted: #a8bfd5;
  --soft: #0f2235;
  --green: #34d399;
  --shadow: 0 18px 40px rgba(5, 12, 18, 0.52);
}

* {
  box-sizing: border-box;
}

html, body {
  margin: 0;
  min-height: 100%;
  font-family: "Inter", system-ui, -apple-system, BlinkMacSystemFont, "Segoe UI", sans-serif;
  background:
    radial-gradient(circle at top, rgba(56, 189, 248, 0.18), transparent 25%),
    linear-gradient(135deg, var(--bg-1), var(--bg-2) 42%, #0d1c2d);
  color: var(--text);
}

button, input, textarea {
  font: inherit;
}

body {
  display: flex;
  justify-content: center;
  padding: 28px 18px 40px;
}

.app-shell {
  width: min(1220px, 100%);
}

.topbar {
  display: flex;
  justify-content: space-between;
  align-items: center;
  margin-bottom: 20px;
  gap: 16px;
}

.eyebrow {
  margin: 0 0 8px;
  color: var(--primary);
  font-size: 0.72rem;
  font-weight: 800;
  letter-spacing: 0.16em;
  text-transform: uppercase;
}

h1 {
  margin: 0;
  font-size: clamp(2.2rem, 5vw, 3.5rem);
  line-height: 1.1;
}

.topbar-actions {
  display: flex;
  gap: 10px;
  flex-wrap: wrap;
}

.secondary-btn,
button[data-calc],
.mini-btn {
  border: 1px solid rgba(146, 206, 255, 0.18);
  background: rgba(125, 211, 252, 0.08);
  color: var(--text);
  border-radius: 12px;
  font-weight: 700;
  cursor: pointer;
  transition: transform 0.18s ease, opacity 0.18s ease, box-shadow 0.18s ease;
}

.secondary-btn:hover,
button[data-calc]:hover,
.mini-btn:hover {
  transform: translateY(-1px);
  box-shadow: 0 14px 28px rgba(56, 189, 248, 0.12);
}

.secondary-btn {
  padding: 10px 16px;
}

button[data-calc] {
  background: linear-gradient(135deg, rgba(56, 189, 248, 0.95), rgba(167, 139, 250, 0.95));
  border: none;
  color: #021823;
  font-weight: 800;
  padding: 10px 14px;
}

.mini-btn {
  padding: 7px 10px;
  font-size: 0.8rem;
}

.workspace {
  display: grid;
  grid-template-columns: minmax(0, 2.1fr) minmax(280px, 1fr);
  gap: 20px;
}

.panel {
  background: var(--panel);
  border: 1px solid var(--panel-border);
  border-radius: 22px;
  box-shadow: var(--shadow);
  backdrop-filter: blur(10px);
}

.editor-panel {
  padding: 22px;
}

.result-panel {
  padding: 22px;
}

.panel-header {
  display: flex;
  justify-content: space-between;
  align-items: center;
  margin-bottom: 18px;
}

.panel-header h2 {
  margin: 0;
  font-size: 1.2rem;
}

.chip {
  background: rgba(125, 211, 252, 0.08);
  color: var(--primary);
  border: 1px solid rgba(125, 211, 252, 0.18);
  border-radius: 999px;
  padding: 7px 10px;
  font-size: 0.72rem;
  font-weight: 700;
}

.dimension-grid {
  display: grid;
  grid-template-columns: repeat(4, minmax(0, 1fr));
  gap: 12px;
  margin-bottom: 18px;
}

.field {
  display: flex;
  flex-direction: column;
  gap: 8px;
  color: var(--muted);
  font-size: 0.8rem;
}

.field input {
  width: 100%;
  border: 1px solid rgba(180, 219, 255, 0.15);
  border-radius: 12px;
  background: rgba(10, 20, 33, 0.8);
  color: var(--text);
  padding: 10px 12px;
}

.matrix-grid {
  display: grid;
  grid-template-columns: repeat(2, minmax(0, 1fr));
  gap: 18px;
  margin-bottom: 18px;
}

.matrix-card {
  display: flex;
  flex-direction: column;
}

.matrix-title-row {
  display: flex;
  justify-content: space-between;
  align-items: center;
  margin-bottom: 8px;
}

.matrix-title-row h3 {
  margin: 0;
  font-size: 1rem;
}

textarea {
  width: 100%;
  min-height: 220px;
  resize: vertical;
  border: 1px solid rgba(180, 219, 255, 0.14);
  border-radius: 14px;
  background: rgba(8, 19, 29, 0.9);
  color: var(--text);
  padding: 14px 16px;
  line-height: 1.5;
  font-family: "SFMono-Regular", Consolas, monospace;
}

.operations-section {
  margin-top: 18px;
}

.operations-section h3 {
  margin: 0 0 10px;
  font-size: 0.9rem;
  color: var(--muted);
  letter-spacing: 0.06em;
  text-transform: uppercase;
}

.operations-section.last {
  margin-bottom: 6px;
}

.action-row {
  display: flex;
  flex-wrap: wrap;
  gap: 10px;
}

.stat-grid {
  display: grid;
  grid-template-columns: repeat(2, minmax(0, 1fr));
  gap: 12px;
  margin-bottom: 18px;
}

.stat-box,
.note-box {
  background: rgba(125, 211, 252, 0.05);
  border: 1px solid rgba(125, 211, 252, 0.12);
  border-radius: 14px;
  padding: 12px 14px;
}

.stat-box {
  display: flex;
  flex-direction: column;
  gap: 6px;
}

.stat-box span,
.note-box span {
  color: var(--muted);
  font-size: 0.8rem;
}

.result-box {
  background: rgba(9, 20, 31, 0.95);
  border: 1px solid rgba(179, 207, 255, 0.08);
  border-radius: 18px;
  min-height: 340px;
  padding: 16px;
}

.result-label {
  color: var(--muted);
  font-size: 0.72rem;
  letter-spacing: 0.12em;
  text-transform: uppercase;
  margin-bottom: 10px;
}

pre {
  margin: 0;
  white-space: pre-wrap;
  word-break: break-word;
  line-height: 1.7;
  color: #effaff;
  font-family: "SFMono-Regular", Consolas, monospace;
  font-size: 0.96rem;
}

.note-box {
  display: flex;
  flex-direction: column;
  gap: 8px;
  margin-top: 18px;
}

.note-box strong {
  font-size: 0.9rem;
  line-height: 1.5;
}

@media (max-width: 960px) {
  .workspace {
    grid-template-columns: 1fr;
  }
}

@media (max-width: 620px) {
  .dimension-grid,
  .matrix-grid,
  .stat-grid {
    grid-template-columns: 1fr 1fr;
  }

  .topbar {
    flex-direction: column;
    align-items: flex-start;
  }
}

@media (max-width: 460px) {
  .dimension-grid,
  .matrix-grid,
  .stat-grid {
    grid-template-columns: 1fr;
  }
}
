@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matrix Studio</title>
+    <meta
+      name="description"
+      content="Современный онлайн-инструмент для работы с матрицами: сложение, вычитание, умножение, определитель, обратная матрица и решение линейных систем."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Линейная алгебра</p>
+          <h1>Matrix Studio</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="sampleBtn" class="secondary-btn">Пример</button>
+          <button id="clearBtn" class="secondary-btn">Очистить</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="panel editor-panel">
+          <div class="panel-header">
+            <h2>Редактор матриц</h2>
+            <span class="chip">HTML / JavaScript</span>
+          </div>
+
+          <div class="dimension-grid">
+            <label class="field">
+              <span>Строки A</span>
+              <input id="rowsA" type="number" min="1" max="8" value="3" />
+            </label>
+            <label class="field">
+              <span>Столбцы A</span>
+              <input id="colsA" type="number" min="1" max="8" value="3" />
+            </label>
+            <label class="field">
+              <span>Строки B</span>
+              <input id="rowsB" type="number" min="1" max="8" value="3" />
+            </label>
+            <label class="field">
+              <span>Столбцы B</span>
+              <input id="colsB" type="number" min="1" max="8" value="3" />
+            </label>
+          </div>
+
+          <div class="matrix-grid">
+            <div class="matrix-card">
+              <div class="matrix-title-row">
+                <h3>Матрица A</h3>
+                <button class="mini-btn" data-clear="A">Очистить</button>
+              </div>
+              <textarea id="matrixA" spellcheck="false">1 2 3
+4 5 6
+7 8 9</textarea>
+            </div>
+
+            <div class="matrix-card">
+              <div class="matrix-title-row">
+                <h3>Матрица B</h3>
+                <button class="mini-btn" data-clear="B">Очистить</button>
+              </div>
+              <textarea id="matrixB" spellcheck="false">1 0 0
+0 1 0
+0 0 1</textarea>
+            </div>
+          </div>
+
+          <div class="operations-section">
+            <h3>Основные операции</h3>
+            <div class="action-row">
+              <button data-calc="add">A + B</button>
+              <button data-calc="subtract">A - B</button>
+              <button data-calc="multiply">A × B</button>
+              <button data-calc="transposeA">Aᵀ</button>
+              <button data-calc="transposeB">Bᵀ</button>
+            </div>
+          </div>
+
+          <div class="operations-section">
+            <h3>Матричный анализ</h3>
+            <div class="action-row">
+              <button data-calc="detA">det(A)</button>
+              <button data-calc="detB">det(B)</button>
+              <button data-calc="inverseA">A⁻¹</button>
+              <button data-calc="inverseB">B⁻¹</button>
+              <button data-calc="rankA">rank(A)</button>
+              <button data-calc="traceA">trace(A)</button>
+              <button data-calc="traceB">trace(B)</button>
+              <button data-calc="rrefA">RREF(A)</button>
+            </div>
+          </div>
+
+          <div class="operations-section last">
+            <h3>Решение систем</h3>
+            <div class="action-row">
+              <button data-calc="solve">A x = b</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel result-panel">
+          <div class="panel-header">
+            <h2>Результат</h2>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-box">
+              <span>Матрица A</span>
+              <strong id="summaryA">3 × 3</strong>
+            </div>
+            <div class="stat-box">
+              <span>Матрица B</span>
+              <strong id="summaryB">3 × 3</strong>
+            </div>
+          </div>
+
+          <div class="result-box">
+            <div class="result-label">Вывод</div>
+            <pre id="resultOutput">Готово. Выберите операцию.</pre>
+          </div>
+
+          <div class="note-box">
+            <span>Подсказка</span>
+            <strong id="noteSummary">Для сложения и вычитания размеры должны совпадать.</strong>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

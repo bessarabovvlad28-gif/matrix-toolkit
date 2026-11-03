@@ -1,0 +1,751 @@
+const EPSILON = 1e-9;
+
+const matrixAInput = document.getElementById('matrixA');
+const matrixBInput = document.getElementById('matrixB');
+const rowsAInput = document.getElementById('rowsA');
+const colsAInput = document.getElementById('colsA');
+const rowsBInput = document.getElementById('rowsB');
+const colsBInput = document.getElementById('colsB');
+const resultOutput = document.getElementById('resultOutput');
+const summaryA = document.getElementById('summaryA');
+const summaryB = document.getElementById('summaryB');
+const noteSummary = document.getElementById('noteSummary');
+
+function clampDimension(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 1;
+  return Math.max(1, Math.min(8, Math.round(n)));
+}
+
+function updateSummaries() {
+  const rowsA = clampDimension(rowsAInput.value);
+  const colsA = clampDimension(colsAInput.value);
+  const rowsB = clampDimension(rowsBInput.value);
+  const colsB = clampDimension(colsBInput.value);
+
+  rowsAInput.value = rowsA;
+  colsAInput.value = colsA;
+  rowsBInput.value = rowsB;
+  colsBInput.value = colsB;
+
+  summaryA.textContent = `${rowsA} × ${colsA}`;
+  summaryB.textContent = `${rowsB} × ${colsB}`;
+}
+
+function createMatrix(rows, cols, defaultValue = 0) {
+  return Array.from({ length: rows }, () => Array(cols).fill(defaultValue));
+}
+
+function parseMatrixString(rawValue, rows, cols) {
+  const normalized = rawValue
+    .replace(/;/g, '\n')
+    .replace(/\t/g, ' ')
+    .trim();
+
+  if (!normalized) return createMatrix(rows, cols, 0);
+
+  const lines = normalized
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const values = [];
+  for (const line of lines) {
+    const row = line
+      .split(/[\s,]+/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => Number(part));
+
+    if (row.length) values.push(row);
+  }
+
+  if (!values.length) return createMatrix(rows, cols, 0);
+
+  const matrix = createMatrix(rows, cols, 0);
+  for (let r = 0; r < rows; r += 1) {
+    for (let c = 0; c < cols; c += 1) {
+      const value = values[r]?.[c];
+      matrix[r][c] = Number.isFinite(value) ? value : 0;
+    }
+  }
+
+  return matrix;
+}
+
+function serializeMatrix(matrix) {
+  return matrix.map((row) => row.join(' ')).join('\n');
+}
+
+function formatValue(value) {
+  if (Math.abs(value) < EPSILON) return '0';
+  return Number(value.toFixed(6)).toString();
+}
+
+function formatMatrix(matrix) {
+  return matrix.map((row) => row.map((value) => formatValue(value)).join('  ')).join('\n');
+}
+
+function formatVector(vector) {
+  return vector.map((value) => formatValue(value)).join('  ');
+}
+
+function transpose(matrix) {
+  return matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]));
+}
+
+function addMatrices(a, b) {
+  return a.map((row, r) => row.map((value, c) => value + b[r][c]));
+}
+
+function subtractMatrices(a, b) {
+  return a.map((row, r) => row.map((value, c) => value - b[r][c]));
+}
+
+function multiplyMatrices(a, b) {
+  const rowsA = a.length;
+  const colsA = a[0].length;
+  const colsB = b[0].length;
+
+  const result = createMatrix(rowsA, colsB, 0);
+  for (let r = 0; r < rowsA; r += 1) {
+    for (let c = 0; c < colsB; c += 1) {
+      let total = 0;
+      for (let k = 0; k < colsA; k += 1) {
+        total += a[r][k] * b[k][c];
+      }
+      result[r][c] = total;
+    }
+  }
+  return result;
+}
+
+function determinant(matrix) {
+  const n = matrix.length;
+  const copy = matrix.map((row) => [...row]);
+  let sign = 1;
+
+  for (let i = 0; i < n; i += 1) {
+    let pivotRow = i;
+    for (let r = i + 1; r < n; r += 1) {
+      if (Math.abs(copy[r][i]) > Math.abs(copy[pivotRow][i])) {
+        pivotRow = r;
+      }
+    }
+
+    if (Math.abs(copy[pivotRow][i]) < EPSILON) return 0;
+
+    if (pivotRow !== i) {
+      [copy[i], copy[pivotRow]] = [copy[pivotRow], copy[i]];
+      sign *= -1;
+    }
+
+    const pivot = copy[i][i];
+    for (let c = i; c < n; c += 1) {
+      copy[i][c] /= pivot;
+    }
+
+    for (let r = i + 1; r < n; r += 1) {
+      const factor = copy[r][i];
+      if (Math.abs(factor) < EPSILON) continue;
+      for (let c = i; c < n; c += 1) {
+        copy[r][c] -= factor * copy[i][c];
+      }
+    }
+  }
+
+  let det = sign;
+  for (let i = 0; i < n; i += 1) {
+    det *= copy[i][i];
+  }
+
+  return det;
+}
+
+function inverseMatrix(matrix) {
+  const n = matrix.length;
+  const augmented = matrix.map((row, r) => [
+    ...row,
+    ...Array.from({ length: n }, (_, c) => (r === c ? 1 : 0))
+  ]);
+
+  for (let i = 0; i < n; i += 1) {
+    let pivotRow = i;
+    for (let r = i + 1; r < n; r += 1) {
+      if (Math.abs(augmented[r][i]) > Math.abs(augmented[pivotRow][i])) {
+        pivotRow = r;
+      }
+    }
+
+    if (Math.abs(augmented[pivotRow][i]) < EPSILON) {
+      throw new Error('Матрица вырожденная, обратной матрицы не существует.');
+    }
+
+    if (pivotRow !== i) {
+      [augmented[i], augmented[pivotRow]] = [augmented[pivotRow], augmented[i]];
+    }
+
+    const pivot = augmented[i][i];
+    for (let c = 0; c < 2 * n; c += 1) {
+      augmented[i][c] /= pivot;
+    }
+
+    for (let r = 0; r < n; r += 1) {
+      if (r === i) continue;
+      const factor = augmented[r][i];
+      if (Math.abs(factor) < EPSILON) continue;
+      for (let c = 0; c < 2 * n; c += 1) {
+        augmented[r][c] -= factor * augmented[i][c];
+      }
+    }
+  }
+
+  return augmented.map((row) => row.slice(n));
+}
+
+function rankOfMatrix(matrix) {
+  const copy = matrix.map((row) => [...row]);
+  const rows = copy.length;
+  const cols = copy[0].length;
+  let rowIndex = 0;
+  let rank = 0;
+
+  for (let col = 0; col < cols && rowIndex < rows; col += 1) {
+    let pivot = rowIndex;
+    while (pivot < rows && Math.abs(copy[pivot][col]) < EPSILON) {
+      pivot += 1;
+    }
+
+    if (pivot === rows) continue;
+
+    if (pivot !== rowIndex) {
+      [copy[rowIndex], copy[pivot]] = [copy[pivot], copy[rowIndex]];
+    }
+
+    const pivotValue = copy[rowIndex][col];
+    for (let c = col; c < cols; c += 1) {
+      copy[rowIndex][c] /= pivotValue;
+    }
+
+    for (let r = 0; r < rows; r += 1) {
+      if (r === rowIndex) continue;
+      const factor = copy[r][col];
+      if (Math.abs(factor) < EPSILON) continue;
+      for (let c = col; c < cols; c += 1) {
+        copy[r][c] -= factor * copy[rowIndex][c];
+      }
+    }
+
+    rowIndex += 1;
+    rank += 1;
+  }
+
+  return rank;
+}
+
+function traceOfMatrix(matrix) {
+  const n = Math.min(matrix.length, matrix[0].length);
+  let total = 0;
+  for (let i = 0; i < n; i += 1) {
+    total += matrix[i][i];
+  }
+  return total;
+}
+
+function solveLinearSystem(matrix, vector) {
+  const n = matrix.length;
+  if (n !== vector.length) {
+    throw new Error('Матрица и вектор должны иметь одинаковую длину.');
+  }
+
+  const augmented = matrix.map((row, index) => [...row, vector[index]]);
+  let pivotRow = 0;
+  const pivotColumns = [];
+
+  for (let col = 0; col < n && pivotRow < n; col += 1) {
+    let pivot = pivotRow;
+    while (pivot < n && Math.abs(augmented[pivot][col]) < EPSILON) {
+      pivot += 1;
+    }
+
+    if (pivot === n) continue;
+
+    if (pivot !== pivotRow) {
+      [augmented[pivotRow], augmented[pivot]] = [augmented[pivot], augmented[pivotRow]];
+    }
+
+    const pivotValue = augmented[pivotRow][col];
+    for (let c = col; c <= n; c += 1) {
+      augmented[pivotRow][c] /= pivotValue;
+    }
+
+    for (let r = 0; r < n; r += 1) {
+      if (r === pivotRow) continue;
+      const factor = augmented[r][col];
+      if (Math.abs(factor) < EPSILON) continue;
+      for (let c = col; c <= n; c += 1) {
+        augmented[r][c] -= factor * augmented[pivotRow][c];
+      }
+    }
+
+    pivotColumns.push(col);
+    pivotRow += 1;
+  }
+
+  for (let r = pivotRow; r < n; r += 1) {
+    if (Math.abs(augmented[r][n]) > EPSILON) {
+      return { type: 'no-solution', message: 'Система не имеет решений.' };
+    }
+  }
+
+  if (pivotColumns.length < n) {
+    return { type: 'infinite', message: 'Система имеет бесконечно много решений.' };
+  }
+
+  const solution = Array(n).fill(0);
+  for (let row = 0; row < n; row += 1) {
+    const col = pivotColumns[row];
+    solution[col] = augmented[row][n];
+  }
+
+  return { type: 'unique', solution };
+}
+
+function rref(matrix) {
+  const copy = matrix.map((row) => [...row]);
+  const rows = copy.length;
+  const cols = copy[0].length;
+  let rowIndex = 0;
+
+  for (let col = 0; col < cols && rowIndex < rows; col += 1) {
+    let pivot = rowIndex;
+    while (pivot < rows && Math.abs(copy[pivot][col]) < EPSILON) {
+      pivot += 1;
+    }
+
+    if (pivot === rows) continue;
+
+    if (pivot !== rowIndex) {
+      [copy[rowIndex], copy[pivot]] = [copy[pivot], copy[rowIndex]];
+    }
+
+    const pivotValue = copy[rowIndex][col];
+    for (let c = col; c < cols; c += 1) {
+      copy[rowIndex][c] /= pivotValue;
+    }
+
+    for (let r = 0; r < rows; r += 1) {
+      if (r === rowIndex) continue;
+      const factor = copy[r][col];
+      if (Math.abs(factor) < EPSILON) continue;
+      for (let c = col; c < cols; c += 1) {
+        copy[r][c] -= factor * copy[rowIndex][c];
+      }
+    }
+
+    rowIndex += 1;
+  }
+
+  return copy;
+}
+
+function showResult(msg) {
+  resultOutput.textContent = msg;
+}
+
+function parseCurrentMatrices() {
+  updateSummaries();
+
+  const rowsA = clampDimension(rowsAInput.value);
+  const colsA = clampDimension(colsAInput.value);
+  const rowsB = clampDimension(rowsBInput.value);
+  const colsB = clampDimension(colsBInput.value);
+
+  const matrixA = parseMatrixString(matrixAInput.value, rowsA, colsA);
+  const matrixB = parseMatrixString(matrixBInput.value, rowsB, colsB);
+
+  return { matrixA, matrixB, rowsA, colsA, rowsB, colsB };
+}
+
+function handleButtonClick(event) {
+  const { matrixA, matrixB, rowsA, colsA, rowsB, colsB } = parseCurrentMatrices();
+  const action = event.currentTarget.dataset.calc;
+
+  try {
+    switch (action) {
+      case 'add': {
+        if (rowsA !== rowsB || colsA !== colsB) {
+          throw new Error('Для сложения матрицы A и B должны иметь одинаковые размеры.');
+        }
+        const result = addMatrices(matrixA, matrixB);
+        showResult(`A + B\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'subtract': {
+        if (rowsA !== rowsB || colsA !== colsB) {
+          throw new Error('Для вычитания матрицы A и B должны иметь одинаковые размеры.');
+        }
+        const result = subtractMatrices(matrixA, matrixB);
+        showResult(`A - B\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'multiply': {
+        if (colsA !== rowsB) {
+          throw new Error('Количество столбцов A должно равняться количеству строк B.');
+        }
+        const result = multiplyMatrices(matrixA, matrixB);
+        showResult(`A × B\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'transposeA': {
+        const result = transpose(matrixA);
+        showResult(`Aᵀ\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'transposeB': {
+        const result = transpose(matrixB);
+        showResult(`Bᵀ\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'detA': {
+        if (rowsA !== colsA) {
+          throw new Error('Матрица A должна быть квадратной для det(A).');
+        }
+        const result = determinant(matrixA);
+        showResult(`det(A) = ${formatValue(result)}`);
+        break;
+      }
+
+      case 'detB': {
+        if (rowsB !== colsB) {
+          throw new Error('Матрица B должна быть квадратной для det(B).');
+        }
+        const result = determinant(matrixB);
+        showResult(`det(B) = ${formatValue(result)}`);
+        break;
+      }
+
+      case 'inverseA': {
+        if (rowsA !== colsA) {
+          throw new Error('Матрица A должна быть квадратной для обратной матрицы.');
+        }
+        const result = inverseMatrix(matrixA);
+        showResult(`A⁻¹\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'inverseB': {
+        if (rowsB !== colsB) {
+          throw new Error('Матрица B должна быть квадратной для обратной матрицы.');
+        }
+        const result = inverseMatrix(matrixB);
+        showResult(`B⁻¹\n${formatMatrix(result)}`);
+        break;
+      }
+
+      case 'rankA': {
+        const result = rankOfMatrix(matrixA);
+        showResult(`rank(A) = ${result}`);
+        break;
+      }
+
+      case 'traceA': {
+        if (rowsA !== colsA) {
+          throw new Error('Матрица A должна быть квадратной для trace(A).');
+        }
+        showResult(`trace(A) = ${formatValue(traceOfMatrix(matrixA))}`);
+        break;
+      }
+
+      case 'traceB': {
+        if (rowsB !== colsB) {
+          throw new Error('Матрица B должна быть квадратной для trace(B).');
+        }
+        showResult(`trace(B) = ${formatValue(traceOfMatrix(matrixB))}`);
+        break;
+      }
+
+      case 'solve': {
+        if (rowsA !== colsA) {
+          throw new Error('Матрица A должна быть квадратной для решения системы A x = b.');
+        }
+        const vector = parseMatrixString(matrixBInput.value, rowsB, 1).map((row) => row[0]);
+        const result = solveLinearSystem(matrixA, vector);
+
+        if (result.type === 'no-solution') {
+          showResult(result.message);
+        } else if (result.type === 'infinite') {
+          showResult(result.message);
+        } else {
+          showResult(`Решение x\n${formatVector(result.solution)}`);
+        }
+        break;
+      }
+
+      case 'rrefA': {
+        const result = rref(matrixA);
+        showResult(`RREF(A)\n${formatMatrix(result)}`);
+        break;
+      }
+
+      default:
+        showResult('Операция не выбрана.');
+    }
+  } catch (error) {
+    showResult(error.message || 'Произошла ошибка.');
+  }
+}
+
+function clearMatrix(target) {
+  const rows = clampDimension(target === 'A' ? rowsAInput.value : rowsBInput.value);
+  const cols = clampDimension(target === 'A' ? colsAInput.value : colsBInput.value);
+  const emptyMatrix = createMatrix(rows, cols, 0);
+  const text = serializeMatrix(emptyMatrix);
+
+  if (target === 'A') {
+    matrixAInput.value = text;
+  } else {
+    matrixBInput.value = text;
+  }
+}
+
+function setExample() {
+  rowsAInput.value = 3;
+  colsAInput.value = 3;
+  rowsBInput.value = 3;
+  colsBInput.value = 3;
+
+  matrixAInput.value = `2 1 0
+1 3 1
+0 1 2`;
+  matrixBInput.value = `1 0 0
+0 1 0
+0 0 1`;
+
+  updateSummaries();
+  noteSummary.textContent = 'Пример загружен. Можно тестировать операции.';
+}
+
+function clearAll() {
+  rowsAInput.value = 3;
+  colsAInput.value = 3;
+  rowsBInput.value = 3;
+  colsBInput.value = 3;
+  matrixAInput.value = '0 0 0\n0 0 0\n0 0 0';
+  matrixBInput.value = '0 0 0\n0 0 0\n0 0 0';
+  updateSummaries();
+  noteSummary.textContent = 'Поля очищены. Введите новые значения.';
+}
+
+[rowsAInput, colsAInput, rowsBInput, colsBInput].forEach((input) => {
+  input.addEventListener('input', updateSummaries);
+});
+
+document.querySelectorAll('[data-calc]').forEach((button) => {
+  button.addEventListener('click', handleButtonClick);
+});
+
+document.querySelectorAll('[data-clear]').forEach((button) => {
+  button.addEventListener('click', () => clearMatrix(button.dataset.clear));
+});
+
+document.getElementById('sampleBtn').addEventListener('click', setExample);
+document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+updateSummaries();
+showResult('Готово. Выберите операцию для расчёта.');
+
+
+// Комментарий: это базовый статический сайт для матриц.
+// Его можно открыть в браузере напрямую или через Live Server в VS Code.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
