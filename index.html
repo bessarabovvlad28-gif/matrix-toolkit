@@ -15,7 +15,7 @@
         <h1>Matrix Studio</h1>
         <p class="subtitle">Числа разделяйте пробелами, строки — переносами.</p>
       </div>
-      <button id="sample" class="quiet">Загрузить пример</button>
+      <button id="sample" class="quiet">Пример</button>
     </header>
 
     <section class="workspace">
@@ -29,34 +29,34 @@
 2
 3</textarea></label>
         </div>
-        <h3>Операции с матрицами</h3>
+        <h3>Основные действия</h3>
         <div class="buttons">
-          <button data-op="add">Сложить матрицы</button>
-          <button data-op="subtract">Вычесть матрицы</button>
-          <button data-op="multiply">Умножить матрицы</button>
-          <button data-op="transposeA">Транспонировать матрицу A</button>
-          <button data-op="transposeB">Транспонировать матрицу B</button>
-          <button data-op="detA">Найти определитель матрицы A</button>
-          <button data-op="detB">Найти определитель матрицы B</button>
-          <button data-op="inverseA">Найти обратную матрицу A</button>
-          <button data-op="inverseB">Найти обратную матрицу B</button>
-          <button data-op="rankA">Найти ранг матрицы A</button>
-          <button data-op="traceA">Найти след матрицы A</button>
-          <button data-op="rrefA">Привести A к ступенчатому виду</button>
-          <button data-op="cramer">Решить систему методом Крамера</button>
-          <button data-op="gauss">Решить систему методом Гаусса</button>
+          <button data-op="add">Сложение</button>
+          <button data-op="subtract">Вычитание</button>
+          <button data-op="multiply">Умножение</button>
+          <button data-op="transposeA">Транспонировать A</button>
+          <button data-op="transposeB">Транспонировать B</button>
+          <button data-op="detA">Определитель A</button>
+          <button data-op="detB">Определитель B</button>
+          <button data-op="inverseA">Обратная A</button>
+          <button data-op="inverseB">Обратная B</button>
+          <button data-op="rankA">Ранг A</button>
+          <button data-op="traceA">След A</button>
+          <button data-op="rrefA">Ступенчатый вид</button>
+          <button data-op="cramer">Крамер</button>
+          <button data-op="gauss">Гаусс</button>
         </div>
-        <p class="hint">Для методов Крамера и Гаусса матрица A должна быть квадратной. Введите правую часть b в поле справа — одним числом на строку.</p>
+        <p class="hint">Для решений систем введите квадратную матрицу A и столбец b справа.</p>
       </section>
 
       <aside class="card result-card">
         <h2>Ответ</h2>
-        <pre id="result" aria-live="polite">Выберите операцию.</pre>
-        <h2 class="steps-heading">Ход решения</h2>
-        <pre id="steps" aria-live="polite">Для методов Крамера и Гаусса здесь появятся шаги решения.</pre>
+        <pre id="result" aria-live="polite">Выберите действие.</pre>
+        <h2 class="steps-heading">Пошаговый ход</h2>
+        <pre id="steps" aria-live="polite">Здесь появится ход решения.</pre>
       </aside>
     </section>
-    <footer>Все вычисления выполняются в вашем браузере.</footer>
+    <footer>Все вычисления выполняются в браузере.</footer>
   </main>
   <script src="script.js"></script>
 </body>
